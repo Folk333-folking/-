@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nude Studio — маникюрный салон. Онлайн-запись</title>
+<meta name="description" content="Маникюр, педикюр и наращивание ногтей. Запишитесь онлайн за минуту.">
+<style>
+:root { --milk:#fbf7f3; --beige:#efe3d8; --powder:#f2d9d4; --rose:#c98f95; --ink:#3a2f2f; --muted:#8a7a76; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin:0; background:var(--milk); color:var(--ink); font:16px/1.6 Georgia,'Times New Roman',serif; overflow-x:hidden; }
+h1,h2,h3 { font-weight:400; margin:0; line-height:1.15; }
+.w { max-width:1080px; margin:auto; padding:0 20px; }
+header { position:absolute; inset:0 0 auto; z-index:5; }
+header .w { display:flex; justify-content:space-between; align-items:center; height:68px; }
+.logo { font-size:22px; letter-spacing:.08em; text-decoration:none; color:var(--ink); }
+nav a { margin-left:22px; text-decoration:none; color:var(--ink); font:14px system-ui,sans-serif; }
+.btn { display:inline-block; border:0; background:var(--ink); color:#fff; padding:14px 28px; border-radius:40px; font:15px system-ui,sans-serif; cursor:pointer; text-decoration:none; transition:.25s; }
+.btn:hover { background:var(--rose); transform:translateY(-2px); }
+.btn.ghost { background:none; color:var(--ink); border:1px solid var(--rose); }
+.btn:disabled { opacity:.5; cursor:default; transform:none; }
+.hero { min-height:92vh; display:flex; align-items:center; background:radial-gradient(circle at 78% 40%,var(--powder) 0,transparent 42%),radial-gradient(circle at 15% 85%,var(--beige) 0,transparent 40%); }
+.hero h1 { font-size:clamp(40px,7vw,84px); max-width:700px; }
+.hero p { max-width:480px; color:var(--muted); margin:22px 0 32px; }
+section { padding:84px 0; }
+h2 { font-size:clamp(28px,4vw,44px); margin-bottom:34px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; }
+.card { background:#fff; border-radius:22px; padding:26px; box-shadow:0 6px 24px rgba(120,80,70,.07); transition:.3s; }
+.card:hover { transform:translateY(-4px); }
+.card h3 { font-size:21px; margin-bottom:8px; }
+.card p { margin:0 0 14px; color:var(--muted); font-size:15px; }
+.price { font:600 18px system-ui,sans-serif; }
+.price small { color:var(--muted); font-weight:400; margin-left:8px; }
+.av { width:64px; height:64px; border-radius:50%; background:var(--powder); display:grid; place-items:center; font-size:26px; margin-bottom:14px; }
+.alt { background:var(--beige); }
+.step { display:flex; gap:12px; align-items:baseline; margin:22px 0 8px; font:15px system-ui,sans-serif; }
+.step b { font:26px Georgia,serif; color:var(--rose); }
+input,select,textarea { width:100%; padding:13px 14px; border:1px solid #dccdc6; border-radius:12px; background:#fff; font:16px system-ui,sans-serif; color:var(--ink); }
+.slots { display:flex; flex-wrap:wrap; gap:8px; }
+.slot { padding:10px 16px; border:1px solid #dccdc6; background:#fff; border-radius:30px; font:15px system-ui,sans-serif; cursor:pointer; }
+.slot[aria-pressed=true] { background:var(--ink); color:#fff; border-color:var(--ink); }
+#msg { min-height:24px; margin:14px 0; font:15px system-ui,sans-serif; }
+.err { color:#b3261e; } .ok { color:#3d7a4f; }
+form,.box { max-width:560px; }
+footer { padding:50px 0; background:var(--ink); color:#eadfd9; font:15px system-ui,sans-serif; }
+footer a { color:#eadfd9; }
+.mob { display:none; }
+@media (max-width:760px) { nav { display:none; } section { padding:56px 0; } .mob { display:block; position:fixed; left:14px; right:14px; bottom:14px; text-align:center; z-index:9; } body { padding-bottom:70px; } }
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+<header><div class="w"><a class="logo" href="#">NUDE STUDIO</a>
+<nav><a href="#services">Услуги</a><a href="#masters">Мастера</a><a href="#book">Запись</a><a href="#contacts">Контакты</a></nav></div></header>
+
+<div id="home">
+<div class="hero"><div class="w"><h1>Нежный маникюр, который хочется показывать</h1>
+<p>Студия маникюра и педикюра. Стерильные инструменты, спокойная атмосфера и аккуратный результат.</p>
+<a class="btn" href="#book">Записаться онлайн</a></div></div>
+
+<section id="services"><div class="w"><h2>Услуги</h2><div class="grid" id="svc-list"></div></div></section>
+<section id="masters" class="alt"><div class="w"><h2>Мастера</h2><div class="grid" id="mas-list"></div></div></section>
+
+<section id="book"><div class="w"><h2>Запись онлайн</h2>
+<form id="f" novalidate>
+<div class="step"><b>1</b><label for="svc">Услуга</label></div><select id="svc"></select>
+<div class="step"><b>2</b><label for="mas">Мастер</label></div><select id="mas"></select>
+<div class="step"><b>3</b><label for="date">Дата</label></div><input id="date" type="date">
+<div class="step"><b>4</b><span>Время</span></div><div class="slots" id="slots" role="group" aria-label="Время"></div>
+<div class="step"><b>5</b><label for="name">Имя и телефон</label></div>
+<input id="name" autocomplete="name" placeholder="Имя" maxlength="60"><div style="height:10px"></div>
+<input id="phone" type="tel" autocomplete="tel" placeholder="+7 900 000 00 00"><div style="height:10px"></div>
+<textarea id="comment" rows="2" maxlength="300" placeholder="Комментарий (необязательно)"></textarea>
+<div id="msg" role="status"></div>
+<button class="btn" id="send" type="submit">Подтвердить запись</button>
+</form></div></section>
+</div>
+
+<section id="manage" hidden><div class="w"><h2>Ваша запись</h2><div class="box" id="mbox"></div></div></section>
+
+<footer id="contacts"><div class="w">
+<p><b>Nude Studio</b><br>Адрес, телефон и график работы задаются в настройках салона.<br>Ежедневно 10:00–20:00</p>
+<p><a href="/admin.html">Вход для администратора</a></p></div></footer>
+<a class="btn mob" href="#book">Записаться</a>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+async function api(u, body) {
+  const o = body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'fetch' }, body: JSON.stringify(body) };
+  const r = await fetch(u, o), j = await r.json();
+  if (!r.ok) throw Error(j.error || 'Ошибка');
+  return j;
+}
+const say = (t, c) => { $('#msg').textContent = t; $('#msg').className = c || ''; };
+const iso = d => new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+let time = '', req = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+$('#date').min = $('#date').value = iso(new Date());
+
+async function init() {
+  const [s, m] = await Promise.all([api('/api/services'), api('/api/masters')]);
+  $('#svc-list').innerHTML = s.map(x => `<div class="card"><h3>${esc(x.name)}</h3><p>${esc(x.descr)}</p>
+    <div class="price">${+x.price} ₽<small>${+x.dur} мин</small></div><br><button class="btn ghost" onclick="pickSvc(${+x.id})">Записаться</button></div>`).join('');
+  $('#mas-list').innerHTML = m.map(x => `<div class="card"><div class="av">${esc(x.name[0])}</div><h3>${esc(x.name)}</h3><p>${esc(x.spec)}</p></div>`).join('');
+  $('#svc').innerHTML = s.map(x => `<option value="${+x.id}">${esc(x.name)} — ${+x.price} ₽, ${+x.dur} мин</option>`).join('');
+  $('#mas').innerHTML = '<option value="0">Любой свободный мастер</option>' + m.map(x => `<option value="${+x.id}">${esc(x.name)}</option>`).join('');
+  loadSlots();
+}
+function pickSvc(id) { $('#svc').value = id; loadSlots(); location.hash = '#book'; }
+async function loadSlots() {
+  time = '';
+  const box = $('#slots');
+  box.textContent = 'Загрузка…';
+  try {
+    const t = await api(`/api/slots?service=${$('#svc').value}&master=${$('#mas').value}&date=${$('#date').value}`);
+    if (!t.length) { box.textContent = 'Свободного времени нет — выберите другую дату.'; return; }
+    box.innerHTML = t.map(x => `<button type="button" class="slot" aria-pressed="false">${x}</button>`).join('');
+    box.querySelectorAll('button').forEach(b => b.onclick = () => {
+      box.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true'); time = b.textContent;
+    });
+  } catch (e) { box.textContent = e.message; }
+}
+['svc', 'mas', 'date'].forEach(i => $('#' + i).onchange = loadSlots);
+
+$('#f').onsubmit = async e => {
+  e.preventDefault();
+  if (!time) return say('Выберите время', 'err');
+  $('#send').disabled = true; say('Отправляем…');
+  try {
+    const [b] = await api('/api/book', { service: +$('#svc').value, master: +$('#mas').value, date: $('#date').value, time,
+      name: $('#name').value, phone: $('#phone').value, comment: $('#comment').value, req });
+    $('#f').innerHTML = `<h3>Вы записаны</h3><p>${esc(b.service)}<br>Мастер: ${esc(b.master)}<br>${esc(b.date)}, ${esc(b.time)}</p>
+      <p>Запись ожидает подтверждения администратором. Отменить её можно по ссылке:<br><a href="/?m=${esc(b.token)}">/?m=${esc(b.token)}</a></p>`;
+  } catch (err) { say(err.message, 'err'); $('#send').disabled = false; loadSlots(); }
+};
+
+// страница управления записью по уникальной ссылке
+const ST = { pending: 'ожидает подтверждения', confirmed: 'подтверждена', arrived: 'клиент пришёл', done: 'завершена', cancelled_client: 'отменена клиентом', cancelled_admin: 'отменена администратором', no_show: 'клиент не пришёл' };
+async function manage(token) {
+  $('#home').hidden = true; $('#manage').hidden = false;
+  try {
+    const [b] = await api('/api/manage/' + encodeURIComponent(token));
+    if (!b) throw Error('Запись не найдена');
+    const can = ['pending', 'confirmed'].includes(b.status);
+    $('#mbox').innerHTML = `<div class="card"><h3>${esc(b.service)}</h3><p>Мастер: ${esc(b.master)}<br>${esc(b.date)}, ${esc(b.time)}<br>Статус: ${esc(ST[b.status] || b.status)}</p>
+      ${can ? '<button class="btn ghost" id="cx">Отменить запись</button>' : ''}<div id="msg2"></div></div><p><a href="/">На главную</a></p>`;
+    if (can) $('#cx').onclick = async () => {
+      if (!confirm('Отменить запись?')) return;
+      try { await api(`/api/manage/${encodeURIComponent(token)}/cancel`, {}); manage(token); }
+      catch (e) { $('#msg2').innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+    };
+  } catch (e) { $('#mbox').innerHTML = `<p class="err">${esc(e.message)}</p><a href="/">На главную</a>`; }
+}
+const m = new URLSearchParams(location.search).get('m');
+if (m) manage(m); else init();
+</script>
+</body>
+</html>
